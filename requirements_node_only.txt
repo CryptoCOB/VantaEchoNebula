@@ -1,0 +1,14 @@
+# VantaEchoNebula Node Requirements (Minimal)
+# Only essential packages for blockchain node operation
+
+# Core networking
+requests>=2.28.0
+websockets>=10.0
+
+# Basic cryptography for blockchain
+cryptography>=3.4.8
+
+# Optional: For enhanced features (uncomment if needed)
+# torch>=1.9.0           # Only if using AI features
+# transformers>=4.20.0   # Only if using AI features
+# numpy>=1.21.0          # Only if using AI features
