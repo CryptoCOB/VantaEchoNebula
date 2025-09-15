@@ -14,6 +14,13 @@ from pathlib import Path
 # Add current directory to Python path
 sys.path.insert(0, str(Path(__file__).parent))
 
+# Import network configuration
+try:
+    from chain_config import ChainConfigManager, ChainType, use_main_chain, use_test_chain, get_current_chain
+except ImportError:
+    print("⚠️ Chain configuration not available - running in standalone mode")
+    ChainConfigManager = None
+
 def safe_print(text):
     """Print text safely without Unicode errors."""
     try:
@@ -41,6 +48,8 @@ class VantaEchoNebulaSystem:
         self.logger = setup_logging()
         self.agents = {}
         self.running = False
+        self.chain_config = None
+        self.network_mode = 'standalone'
         
         # Agent modules mapping
         self.agent_modules = {
@@ -73,10 +82,42 @@ class VantaEchoNebulaSystem:
             except Exception as e:
                 safe_print(f"❌ Error initializing {agent_name}: {e}")
     
-    async def start_system(self, mode='node'):
+    def connect_to_network(self, network='testnet'):
+        """Connect to MainNet or TestNet."""
+        if ChainConfigManager is None:
+            safe_print("⚠️ Blockchain not available - running in standalone mode")
+            self.network_mode = 'standalone'
+            return
+        
+        try:
+            if network.lower() == 'mainnet':
+                safe_print("🌍 Connecting to VantaEchoNebula MainNet...")
+                self.chain_config = use_main_chain()
+                self.network_mode = 'mainnet'
+                safe_print("✅ Connected to MainNet")
+                safe_print("⚠️ MainNet is for production use!")
+            else:
+                safe_print("🧪 Connecting to VantaEchoNebula TestNet...")
+                self.chain_config = use_test_chain()
+                self.network_mode = 'testnet'
+                safe_print("✅ Connected to TestNet")
+                safe_print("🛡️ TestNet is safe for development")
+            
+            safe_print(f"🔗 Network: {self.chain_config.network_name}")
+            safe_print(f"🆔 Chain ID: {self.chain_config.chain_id}")
+            safe_print(f"🚪 API Port: {self.chain_config.api_port}")
+            
+        except Exception as e:
+            safe_print(f"❌ Network connection failed: {e}")
+            self.network_mode = 'standalone'
+    
+    async def start_system(self, mode='node', network='testnet'):
         """Start the VantaEchoNebula system."""
         safe_print("🚀 Starting VantaEchoNebula Network...")
         safe_print("=" * 50)
+        
+        # Connect to blockchain network
+        self.connect_to_network(network)
         
         self.initialize_agents()
         self.running = True
@@ -153,6 +194,12 @@ class VantaEchoNebulaSystem:
                     self.show_status()
                 elif command == 'agents':
                     self.list_agents()
+                elif command == 'mainnet':
+                    self.connect_to_network('mainnet')
+                elif command == 'testnet':
+                    self.connect_to_network('testnet')
+                elif command == 'network':
+                    self.show_network_info()
                 else:
                     safe_print(f"Unknown command: {command}")
             except KeyboardInterrupt:
@@ -172,15 +219,23 @@ class VantaEchoNebulaSystem:
     def show_help(self):
         """Show available commands."""
         safe_print("\n🌌 VantaEchoNebula Commands:")
-        safe_print("  help    - Show this help")
-        safe_print("  status  - Show system status")
-        safe_print("  agents  - List available agents")
-        safe_print("  quit    - Exit VantaEchoNebula")
+        safe_print("  help     - Show this help")
+        safe_print("  status   - Show system status")
+        safe_print("  agents   - List available agents")
+        safe_print("  mainnet  - Connect to MainNet")
+        safe_print("  testnet  - Connect to TestNet")
+        safe_print("  network  - Show network info")
+        safe_print("  quit     - Exit VantaEchoNebula")
     
     def show_status(self):
         """Show system status."""
         safe_print(f"\n📊 System Status:")
         safe_print(f"  Running: {self.running}")
+        safe_print(f"  Network Mode: {self.network_mode}")
+        if self.chain_config:
+            safe_print(f"  Connected to: {self.chain_config.network_name}")
+            safe_print(f"  Chain ID: {self.chain_config.chain_id}")
+            safe_print(f"  API Port: {self.chain_config.api_port}")
         safe_print(f"  Agents loaded: {len(self.agents)}")
         safe_print(f"  Available agents: {list(self.agents.keys())}")
     
@@ -194,12 +249,31 @@ class VantaEchoNebulaSystem:
         for agent_name in self.agent_modules.keys():
             if agent_name not in self.agents:
                 safe_print(f"  ❌ {agent_name}")
+    
+    def show_network_info(self):
+        """Show network connection information."""
+        safe_print(f"\n🌐 Network Information:")
+        safe_print(f"  Mode: {self.network_mode}")
+        
+        if self.chain_config:
+            safe_print(f"  Network: {self.chain_config.network_name}")
+            safe_print(f"  Chain ID: {self.chain_config.chain_id}")
+            safe_print(f"  Chain Type: {self.chain_config.chain_type.value.upper()}")
+            safe_print(f"  Block Time: {self.chain_config.block_time_target}s")
+            safe_print(f"  Mining Reward: {self.chain_config.mining_reward}")
+            safe_print(f"  API Endpoint: http://localhost:{self.chain_config.api_port}")
+            safe_print(f"  RPC Endpoint: http://localhost:{self.chain_config.rpc_port}")
+            safe_print(f"  dVPN: {'Enabled' if self.chain_config.dvpn_enabled else 'Disabled'}")
+        else:
+            safe_print("  No blockchain connection (standalone mode)")
 
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description='VantaEchoNebula Network System')
     parser.add_argument('--mode', choices=['node', 'training', 'echo', 'interactive'], 
                        default='interactive', help='System mode')
+    parser.add_argument('--network', choices=['mainnet', 'testnet'], 
+                       default='testnet', help='Blockchain network to connect to')
     parser.add_argument('--config', help='Configuration file path')
     parser.add_argument('--log-level', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'], 
                        default='INFO', help='Logging level')
@@ -220,7 +294,7 @@ def main():
     
     # Run system
     try:
-        asyncio.run(system.start_system(args.mode))
+        asyncio.run(system.start_system(args.mode, args.network))
     except KeyboardInterrupt:
         safe_print("\n🛑 VantaEchoNebula terminated by user")
     except Exception as e:

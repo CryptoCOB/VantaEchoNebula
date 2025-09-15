@@ -81,6 +81,7 @@ class VantaEchoNebulaInstaller:
         # Essential files to download
         files_to_download = [
             'VantaEchoNebulaSystem.py',
+            'network_connector.py',
             'mobile_node.py',
             'memory_learner.py',
             'reasoning_engine.py',
@@ -130,8 +131,30 @@ class VantaEchoNebulaInstaller:
             launcher_path = self.install_dir / "launch_vanta_echo_nebula.bat"
             launcher_content = f"""@echo off
 echo Starting VantaEchoNebula Network...
+echo.
+echo Choose your network:
+echo 1. TestNet (Safe for development)
+echo 2. MainNet (Production - real transactions!)
+echo 3. Network Connector (Interactive)
+echo 4. Standalone Mode
+set /p choice="Enter choice (1-4): "
+
 cd /d "{self.install_dir}"
-{python_cmd} VantaEchoNebulaSystem.py --mode node
+
+if "%choice%"=="1" (
+    echo Connecting to TestNet...
+    {python_cmd} VantaEchoNebulaSystem.py --mode node --network testnet
+) else if "%choice%"=="2" (
+    echo Connecting to MainNet...
+    {python_cmd} VantaEchoNebulaSystem.py --mode node --network mainnet
+) else if "%choice%"=="3" (
+    echo Starting Network Connector...
+    {python_cmd} network_connector.py
+) else (
+    echo Starting in Standalone Mode...
+    {python_cmd} VantaEchoNebulaSystem.py --mode interactive
+)
+
 pause
 """
             with open(launcher_path, 'w') as f:
@@ -143,8 +166,34 @@ pause
             launcher_path = self.install_dir / "launch_vanta_echo_nebula.sh"
             launcher_content = f"""#!/bin/bash
 echo "Starting VantaEchoNebula Network..."
+echo ""
+echo "Choose your network:"
+echo "1. TestNet (Safe for development)"
+echo "2. MainNet (Production - real transactions!)"
+echo "3. Network Connector (Interactive)"
+echo "4. Standalone Mode"
+read -p "Enter choice (1-4): " choice
+
 cd "{self.install_dir}"
-{python_cmd} VantaEchoNebulaSystem.py --mode node
+
+case $choice in
+    1)
+        echo "Connecting to TestNet..."
+        {python_cmd} VantaEchoNebulaSystem.py --mode node --network testnet
+        ;;
+    2)
+        echo "Connecting to MainNet..."
+        {python_cmd} VantaEchoNebulaSystem.py --mode node --network mainnet
+        ;;
+    3)
+        echo "Starting Network Connector..."
+        {python_cmd} network_connector.py
+        ;;
+    *)
+        echo "Starting in Standalone Mode..."
+        {python_cmd} VantaEchoNebulaSystem.py --mode interactive
+        ;;
+esac
 """
             with open(launcher_path, 'w') as f:
                 f.write(launcher_content)
