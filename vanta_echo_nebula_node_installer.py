@@ -218,7 +218,7 @@ cd "{self.install_dir}"
 def main():
     """Main installer entry point."""
     # Check for test mode
-    if len(sys.argv) > 1 and '--test' in sys.argv:
+    if '--test' in str(sys.argv):
         safe_print("🧪 Running in test mode...")
         safe_print("✅ Installer script is functional")
         return
