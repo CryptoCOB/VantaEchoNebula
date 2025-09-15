@@ -80,9 +80,25 @@ class VantaEchoNebulaInstaller:
         
         # Essential files to download
         files_to_download = [
+            'VantaEchoNebulaSystem.py',
             'mobile_node.py',
-            'VantaEchoNebulaSystem.py', 
+            'memory_learner.py',
+            'reasoning_engine.py',
+            'hybrid_cognition_engine.py',
+            'Echo_location.py',
+            'neural_architecture_search.py',
+            'crypto_nebula.py',
+            'async_stt_engine.py',
+            'async_tts_engine.py',
+            'meta_consciousness.py',
+            'QuantumPulse.py',
+            'proactive_intelligence.py',
+            'orchestrator.py',
+            'async_training_engine.py',
+            'model_utils.py',
+            'chain_config.py',
             'requirements.txt',
+            'AGENTS.md',
             'README.md'
         ]
         
@@ -115,7 +131,7 @@ class VantaEchoNebulaInstaller:
             launcher_content = f"""@echo off
 echo Starting VantaEchoNebula Network...
 cd /d "{self.install_dir}"
-{python_cmd} VantaEchoNebulaSystem.py
+{python_cmd} VantaEchoNebulaSystem.py --mode node
 pause
 """
             with open(launcher_path, 'w') as f:
@@ -128,7 +144,7 @@ pause
             launcher_content = f"""#!/bin/bash
 echo "Starting VantaEchoNebula Network..."
 cd "{self.install_dir}"
-{python_cmd} VantaEchoNebulaSystem.py
+{python_cmd} VantaEchoNebulaSystem.py --mode node
 """
             with open(launcher_path, 'w') as f:
                 f.write(launcher_content)
