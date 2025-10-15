@@ -21,7 +21,7 @@ required_dirs = [
     'nebula/utils'
 ]
 
-print("Checking Nebula directory structure...")
+# Check Nebula directory structure (silent)
 missing_dirs = []
 
 for directory in required_dirs:
@@ -35,19 +35,19 @@ if missing_dirs:
     print("You can run 'create_directories.sh' to create them automatically.")
     sys.exit(1)
 
-print("Checking Nebula module structure...")
+# Check Nebula module structure (silent)
 
 # Import the modular components
 try:
     # Note: Avoid circular import - Nebula is defined in VantaEchoNebulaSystem
     # from VantaEchoNebulaSystem import VantaEchoNebula  # Commented to avoid circular import
     # from main import main  # Commented - main.py not found
-    print("Successfully imported Nebula modules")
+    # Successfully imported Nebula modules (silent)
     
-    # Also verify key components are available
+    # Verify key components are available (silent)
     required_modules = [
         'nebula.modules.quantum_module',
-        'nebula.modules.cosmic_engine',
+        'nebula.modules.cosmic_engine', 
         'nebula.modules.wolf_rayet_nebulas',
         'nebula.modules.context_adaptive_manager',
         'nebula.interfaces.lm_studio',
@@ -62,7 +62,7 @@ try:
             available_modules.append(module)
         except ImportError:
             pass  # Module not available, continue
-    print(f"Available Nebula modules: {len(available_modules)}/{len(required_modules)}")
+    # Available modules check completed (silent)
     
 except ImportError as e:
     print(f"Error importing Nebula modules: {e}")
