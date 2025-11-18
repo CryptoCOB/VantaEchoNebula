@@ -1,0 +1,128 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+build/
+dist/
+*.egg-info/
+*.so
+
+# Virtual environments
+.venv/
+.venv_new/
+venv/
+env/
+
+# IDE/editor
+.vscode/
+.idea/
+*.code-workspace
+*.swp
+*.swo
+*~
+
+# Logs and reports
+*.log
+logs/
+training_debug.log
+training_output.log
+training_error.log
+*_log.txt
+*_logs.txt
+precompute_*.txt
+*_FULL.txt
+*_STREAMING.txt
+*_ULTRA.txt
+streaming_*
+
+# Checkpoints & large artifacts
+training_outputs/
+training/precomputed_teachers_efficient/
+training/precomputed_teachers_streaming/
+training/precomputed_teachers_fast/
+training/training_outputs/
+checkpoints/
+runs/
+*.bin
+*.pt
+*.ckpt
+*.pth
+*.safetensors
+*.model
+*.pkl
+*.pickle
+
+# Training data & datasets
+training/*.jsonl
+training/*.json
+training/data/
+training/higgs_async/
+training/pglyph/
+training/QuantumEcho/
+datasets/
+cache/
+data/
+.temp/
+temp/
+
+# Large files
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.rar
+*.apk
+UNIFIED_DATASET.jsonl
+nebula-worker.tar
+
+# Audio / media
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+
+# Build outputs
+*.lock
+uv.lock
+
+# Node/frontend
+node_modules/
+npm-debug.log
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Docker
+docker/.cache/
+docker/.vscode/
+
+# Misc
+qr_codes/
+qr_codes_working/
+device_logs/
+nebula_logs/
+training_logs/
+training_state/
+training_state_backup/
+training_state_test/
+.DS_Store
+Thumbs.db
+.env.local
+.env
+
+# Session/temp files
+SESSION_SUMMARY_*.md
+*.db
+
+# Mobile/apps
+*.apk
+vanta-echo-nebula*.apk
+vanta-echo-nebula-worker*.apk
+wallet_mobile/*.apk
